@@ -2,6 +2,19 @@
 
 `ttp`, a time tracker inspired by `utt`.
 
+Frankly it's also a good resume piece, as it's small enough to read easily,
+small enough that it didn't take too much time to complete to a "proffesional"
+standard (documentation pending), and complicated enough that it demonstrates a
+general understanding of complicated issues like time zones, templating, etc. A
+lot better then most of what I have on github, which tend towards incomplete
+experements.
+
+It's not complicated, but it is more readable than the average data-science
+pipeline, and more of a complete product than most of what I get called on to
+make proffesionally.
+
+---
+
 ttp is a python time tracker where you tell the time
 tracker what you've done *after* you've already done it. Like writing a git
 commit message.
@@ -29,6 +42,8 @@ Optionally enable bash's tab-completion by adding this to your `~/.bashrc` file.
 
 You can write new reports using jinja2. Personally I use this to generate
 invoices for clients, directly from my hours.
+
+This is with the `default.md` template.
 
 ```markdown
 # default

@@ -29,7 +29,10 @@ def stretch():
     """
     #Why don't we do this using seek? It is a mystery.
     # My theory is that os-primitives for files are 
-    # inconsistant between os's...
+    # inconsistant between os's... not all platforms support
+    # truncate.
+    # ToDO: Maybe make `project_report_data` combine duplicate
+    #entries instead? Like utt.
     with (config_dir/"project.log").open() as f:
         lines = f.readlines()
         date,msg = strpLogLine(lines[-1])
