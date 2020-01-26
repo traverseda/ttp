@@ -27,8 +27,15 @@ def cli():
 def stretch():
     """Move the last task to now.
     """
+    #Why don't we do this using seek? It is a mystery.
+    # My theory is that os-primitives for files are 
+    # inconsistant between os's...
     with (config_dir/"project.log").open() as f:
-        date,msg = strpLogLine(f.readlines()[-1])
+        lines = f.readlines()
+        date,msg = strpLogLine(lines[-1])
+    with (config_dir/"project.log").open("w") as f:
+        for line in lines[:-1]:
+            f.write(line)
         add(msg)
 
 Task = collections.namedtuple('Task', 'msg span start end week')
@@ -45,6 +52,9 @@ def project_report_data():
     firstWeek=None
     with (config_dir/"project.log").open() as f:
         for index, line in enumerate(f.readlines()):
+            if not line.strip():
+                continue
+            index = index+1
             date, msg = strpLogLine(line)
             if not firstWeek:
                 firstWeek = date.floor("week")
@@ -78,14 +88,28 @@ def setup_jinja2_env():
     return jinja2_env
 
 @cli.command()
+@click.option('-a','--all','all_', help="Prints full paths.",is_flag=True)
+def list_templates(all_):
+    """Tells you what templates are available
+    """
+    env = setup_jinja2_env()
+    templates = env.list_templates()
+    if all_:
+        for template in templates:
+            template = env.get_template(template)
+            print(template.filename)
+    else:
+        print(*templates)
+
+@cli.command()
 @click.option('-f','--from','from_', help="Start date for report",default=None)
 @click.option('-t','--to', help="End date for report",default=None)
 @click.option('-w','--week', help="Generate a report for only a specific week",default=None, type=int)
 @click.option('-t','--template',type=click.STRING,autocompletion=get_dynamic_templates,default="default.md")
 def report(from_,to,week,template):
-    """Generate a report.
+    """Show a report.
     """
-    import dateparser
+    import dateparser, jinja2
     reportData = project_report_data()
     if from_:
         from_=dateparser(from_)
@@ -96,8 +120,16 @@ def report(from_,to,week,template):
     if week:
         reportData = (i for i in reportData if i.week == week)
     reportData= list(reportData)
+    assert reportData, "No tasks to report in that range"
     env = setup_jinja2_env()
-    templateInstance = env.get_template(template)
+    try:
+        templateInstance = env.get_template(template)
+    except jinja2.exceptions.TemplateNotFound:
+        print(f"Can't find a template named `{template}`.")
+        print("Try one of the following.")
+        print(*env.list_templates())
+        sys.exit(1)
+
     rendered = templateInstance.render(
         #Utility functions
         round = round,
@@ -121,7 +153,7 @@ def report(from_,to,week,template):
 @cli.command()
 @click.argument('task',nargs=-1)
 def add(task):
-    """Add a task to the log
+    """Add a task when you have finished working on it
     """
     task = " ".join(task)
     now = arrow.now()
@@ -156,6 +188,7 @@ def get_dynamic_projects(ctx, args, incomplete):
 def project(project, create):
     """Start using a specific project.
     """
+    project=" ".join(project)
     newProject = Path("projects")/(project+".log")
     projectPath = (config_dir/"project.log")
     if create:

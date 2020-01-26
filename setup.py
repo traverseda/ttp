@@ -5,7 +5,7 @@ setup(
     packages=find_packages(),
     entry_points = {
         'console_scripts': ['ttp=ttp.main:cli'],
-    }
+    },
     install_requires=(
         'appdirs',
         'click',
