@@ -45,6 +45,8 @@ invoices for clients, directly from my hours.
 
 This is with the `default.md` template.
 
+Of course this is all sample data.
+
 ```markdown
 # default
 ## Monday, January 20th, 2020 to Sunday, January 26th, 2020
@@ -55,4 +57,14 @@ This is with the `default.md` template.
  *  1.88h worked on time tracker overnight
 
 28.88 hours worked total
+```
+
+An example of the log format
+
+```log
+2020-01-25 08:47 -04:00 started-tracking ---------------------
+2020-01-25 09:47 -04:00 worked on time tracker
+2020-01-25 13:47 -04:00 worked on time tracker 2
+2020-01-25 23:47 -04:00 worked on time tracker 3
+2020-01-26 01:14 -04:00 worked on time tracker overnight
 ```

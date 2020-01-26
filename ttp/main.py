@@ -19,6 +19,7 @@ if not (config_dir/"projects/default.log").exists():
 if not (config_dir/"project.log").is_symlink():
     (config_dir/"project.log").symlink_to("projects/default.log")
 
+#ToDo: Pretty print known/expected errors
 @click.group()
 def cli():
     pass
