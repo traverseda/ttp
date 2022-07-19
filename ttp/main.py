@@ -109,7 +109,7 @@ def list_templates(all_):
 @click.option('-f','--from','from_', help="Start date for report",default=None)
 @click.option('-t','--to', help="End date for report",default=None)
 @click.option('-w','--week', help="Generate a report for only a specific week",default=None, type=int)
-@click.option('-t','--template',type=click.STRING,autocompletion=get_dynamic_templates,default="default.md")
+@click.option('-t','--template',type=click.STRING,default="default.md",shell_complete=get_dynamic_templates)
 def report(from_,to,week,template):
     """Show a report.
     """
@@ -188,7 +188,7 @@ def get_dynamic_projects(ctx, args, incomplete):
 
 @cli.command()
 @click.option('--create', help="Create this project if it doesn't already exist",is_flag=True)
-@click.argument('project',nargs=-1,type=click.STRING, autocompletion=get_dynamic_projects)
+@click.argument('project',nargs=-1,type=click.STRING,shell_complete=get_dynamic_projects)
 def project(project, create):
     """Start using a specific project.
     """
