@@ -40,7 +40,7 @@ def stretch():
     with (config_dir/"project.log").open("w") as f:
         for line in lines[:-1]:
             f.write(line)
-        add(msg)
+    add(msg.split(" "))
 
 Task = collections.namedtuple('Task', 'msg span start end week')
 
@@ -116,10 +116,10 @@ def report(from_,to,week,template):
     import dateparser, jinja2
     reportData = project_report_data()
     if from_:
-        from_=dateparser(from_)
+        from_=arrow.get(dateparser.parse(from_,settings={'RETURN_AS_TIMEZONE_AWARE': True}))
         reportData = (i for i in reportData if i.start>from_)
     if to:
-        to=dateparser(to)
+        to=arrow.get(dateparser.parse(to,settings={'RETURN_AS_TIMEZONE_AWARE': True}))
         reportData = (i for i in reportData if i.start<to)
     if week:
         reportData = (i for i in reportData if i.week == week)
