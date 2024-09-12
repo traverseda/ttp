@@ -19,10 +19,41 @@ if not (config_dir/"projects/default.log").exists():
 if not (config_dir/"project.log").is_symlink():
     (config_dir/"project.log").symlink_to("projects/default.log")
 
+class TaskLog:
+    def __init__(self, path):
+        self.path = path
+    def find_last_task(self):
+        #Seek to the end and find the last task
+        with self.path.open() as f:
+            f.seek(0,2)
+            while True:
+                f.seek(-2,1)
+                if f.read(1) == "\n":
+                    break
+            return f.readline()
+    def strpLogLine(self, line):
+        date = arrow.get(line,timefmt)
+        msg = line.replace(date.format(timefmt),"")
+        msg = msg.strip()
+        return date, msg
+
 #ToDo: Pretty print known/expected errors
 @click.group()
 def cli():
     pass
+
+@cli.command()
+def status():
+    """Get the current task and how long you've been working on it
+    """
+    with (config_dir/"project.log").open() as f:
+        lines = f.readlines()
+        date,msg = strpLogLine(lines[-1])
+        now = arrow.now()
+        span = now-date
+        tasklength = "{:5.2f}".format(span.seconds/3600)
+        print(f"Current task: {tasklength} hours")
+        print(f"   Last task: {msg}")
 
 @cli.command()
 def stretch():
@@ -164,6 +195,18 @@ def add(task):
     timestr = now.format(timefmt)
     with (config_dir/"project.log").open("a") as f:
         f.write(f"{timestr} {task}\n")
+
+@cli.command()
+@click.argument('task',nargs=-1)
+def estimate(task):
+    """Add a task estimate
+    """
+    raise NotImplementedError("This feature is not yet implemented")
+    task = " ".join(task)
+    now = arrow.now()
+    timestr = now.format(timefmt)
+    with (config_dir/"project.log").open("a") as f:
+        f.write(f"{timestr} estimate: {task}\n")
 
 @cli.command()
 def edit():
